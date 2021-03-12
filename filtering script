@@ -26,9 +26,9 @@ do
 # 3. Merge files into one 
 
 #!/bin/bash 
-for file in $(find /home/liisi/Samples//* -name "*_nochimeras_30.fasta") 
+for file in $(find ~/Samples//* -name "*_nochimeras_30.fasta") 
   do 
-     cat $file >> /home/liisi/Samples/merged_30/merged_30.fasta
+     cat $file >> ~/Samples/merged_30/merged_30.fasta
      done
  
 # 4. Sorting by size
@@ -42,6 +42,6 @@ vsearch --cluster_smallmem sorted_30.fasta --id 0.97 --consout con_cl_30.fasta -
 
 # 6. Blastn
 
-blastn -db /home/liisi/Samples/unite/unite2 -query con_cl_30.fasta -num_threads 2 -max_target_seqs 1 -max_hsps 1  -qcov_hsp_perc 75 -outfmt 6  > con_30_blast.csv
+blastn -db ~/Samples/unite/unite2 -query con_cl_30.fasta -num_threads 2 -max_target_seqs 1 -max_hsps 1  -qcov_hsp_perc 75 -outfmt 6  > con_30_blast.csv
 
 
