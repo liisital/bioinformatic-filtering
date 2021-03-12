@@ -1,0 +1,53 @@
+# 1. Trimmomatikuga kvaliteedikontroll
+ 
+#!/bin/bash
+for word in $(cat dir6aa.list)
+do
+
+    cd "$word"_its6
+    java -jar /home/liisi/Trimmomatic/Trimmomatic-0.36/trimmomatic-0.36.jar PE *_R1_001.fastq.gz *_R2_001.fastq.gz "$word"_R1_trim_30.fastq unpaired1_30 "$word"_R2_trim_30.fastq unpaired2_30 ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30
+   cd ..
+   done
+
+# 2. Merge pairs, derep, unique seq, nochimeras
+
+#!/bin/bash 
+for word in $(cat dir6met.list)
+do
+    cd "$word"_met
+    sed "s|^@M|@sample="$word"_met;M|g" "$word"_R1_trim_30.fastq > "$word"_R1_trim4_30.fastq
+    sed "s|^@M|@sample="$word"_met;M|g" "$word"_R2_trim_30.fastq > "$word"_R2_trim4_30.fastq
+    vsearch --fastq_mergepairs "$word"_R1_trim4_30.fastq -reverse "$word"_R2_trim4_30.fastq --fastaout "$word"_merged_30.fasta --fastaout_notmerged_rev "$word"_notmerged_rev_30.fasta --fastqout_notmerged_fwd "$word"_notmerged_fwd_30.fasta 
+    vsearch --derep_fulllength "$word"_merged_30.fasta --output "$word"_unique_30.fasta --sizeout --minseqlength 200 
+    vsearch --uchime_denovo "$word"_unique_30.fasta --nonchimeras "$word"_nochimeras_30.fasta --log log_30.txt 
+    cd ..
+    done
+
+# 3. Proovid kokku
+
+#!/bin/bash 
+for file in $(find /home/liisi/Proovid//* -name "*_nochimeras_25.fasta") 
+  do 
+  cat $file >> /home/liisi/Proovid/koos_25/koos_25.fasta
+  
+  done
+ 
+# 4. Suuruse alusel sorteerimine
+
+vsearch --sortbysize koos_30.fasta --output sorted_30.fasta --minsize 4
+
+# 5. Klasterdamine smallmem ja centroid 97% alusel
+
+vsearch --cluster_smallmem sorted_30.fasta --id 0.97 --consout con_cl_30.fasta --sizein --usersort --uc clusters.uc --otutabout con_otu_30.csv --relabel OTU_
+
+# 6. blastimine
+
+##-num_threads naitab cpu-sid (protsessorite arvu)- minul 4 tk
+#-max_target_seqs ja -max_hsps on koos, kuna esimene naitab mitu targetit salvestatakse ja teine naitab mitu high scoring pairsi kuvatakse
+#-qcov_hsp_perc naitab, mitu prossa peab klastri readi pikkus kattuma andmebaasi omaga
+#annab tabelisse 1 parima kattuvusega tulemuse
+#-outfmt 6 on standard, et kunab standard vaartused, kodukal kirjas mis see sisaldab
+
+blastn -db /home/liisi/Proovid/unite/unite2 -query con_cl_30.fasta -num_threads 2 -max_target_seqs 1 -max_hsps 1  -qcov_hsp_perc 75 -outfmt 6  > con_30_blast.csv
+
+
