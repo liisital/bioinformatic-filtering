@@ -4,9 +4,8 @@
 #!/bin/bash
 for word in $(cat list1)
 do
-
-    cd "$word"_its6
-    java -jar /home/liisi/Trimmomatic/Trimmomatic-0.36/trimmomatic-0.36.jar PE *_R1_001.fastq.gz *_R2_001.fastq.gz "$word"_R1_trim_30.fastq unpaired1_30 "$word"_R2_trim_30.fastq unpaired2_30 ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30
+   cd "$word"_its6
+   java -jar /home/liisi/Trimmomatic/Trimmomatic-0.36/trimmomatic-0.36.jar PE *_R1_001.fastq.gz *_R2_001.fastq.gz "$word"_R1_trim_30.fastq unpaired1_30 "$word"_R2_trim_30.fastq unpaired2_30 ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:30
    cd ..
    done
 
@@ -29,9 +28,8 @@ do
 #!/bin/bash 
 for file in $(find /home/liisi/Samples//* -name "*_nochimeras_30.fasta") 
   do 
-  cat $file >> /home/liisi/Samples/merged_30/merged_30.fasta
-  
-  done
+     cat $file >> /home/liisi/Samples/merged_30/merged_30.fasta
+     done
  
 # 4. Sorting by size
 # removal of unique sequences with <4 reads (rare sequences)
