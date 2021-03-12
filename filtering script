@@ -1,5 +1,5 @@
 # 1. Qality control with Trimmomatic
-# - list1 is a list of folder names for raw seguences
+# - list1 is a list of folder names for raw sequences
  
 #!/bin/bash
 for word in $(cat list1)
